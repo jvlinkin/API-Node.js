@@ -64,7 +64,7 @@ export class UserController {
 
         const user = await userRepository.findOne({
             where:{
-                id: Number(id)
+                id
             }
         })
         if(!user){
@@ -113,7 +113,7 @@ export class UserController {
 
         const user = await userRepository.findOne({
             where:{
-                id: Number(id)
+                id
             }
         })
         if(!user){
