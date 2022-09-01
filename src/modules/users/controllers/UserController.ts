@@ -23,9 +23,21 @@ export class UserController {
         return res.json(user);
     }
 
+    public async showUser(req:Request, res: Response): Promise<Response>{
+        const {id} = req.params;
 
+        const user = await userRepository.findOne({
+            where:{
+                id
+            }
+        })
+        if(!user){
+            return res.status(404).json({message:'User not found.'})
+        }
 
-
+        return res.json(user);
+    }
+    
     
      public async create(req:Request,res:Response): Promise<Response | undefined>{
         const {email,password} = req.body;

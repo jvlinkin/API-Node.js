@@ -6,6 +6,12 @@ const userController = new UserController();
 
 userRoutes.get('/', userController.show)
 
+userRoutes.get('/:id', celebrate({
+    [Segments.PARAMS]:{
+        id: Joi.string().uuid().required()
+    }
+}), userController.showUser)
+
 userRoutes.post('/', celebrate({
     [Segments.BODY]:{
         email: Joi.string().email().required(),
@@ -17,7 +23,7 @@ userController.create)
 
 userRoutes.put('/:id', celebrate({
     [Segments.PARAMS]:{
-        id: Joi.string().required()
+        id: Joi.string().uuid().required()
     },
     [Segments.BODY]:{
         email: Joi.string().email().required(),
@@ -29,7 +35,7 @@ userRoutes.put('/:id', celebrate({
 
 userRoutes.delete('/:id', celebrate({
     [Segments.PARAMS]:{
-        id: Joi.string().required()
+        id: Joi.string().uuid().required()
     }
 }),userController.delete)
 
