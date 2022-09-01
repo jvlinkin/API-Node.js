@@ -32,7 +32,7 @@ export class SessionController {
         });
         
         return res.json({
-            message:'Logado!',
+            message:'Logged!',
             token: token
         })
 

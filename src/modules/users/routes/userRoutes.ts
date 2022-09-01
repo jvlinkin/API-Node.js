@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { UserController } from "../controllers/UserController";
 import {celebrate, Joi, Segments} from 'celebrate';
+import isAuthenticated from "../../../middlewares/isAuthenticated";
 const userRoutes = Router();
 const userController = new UserController();
+
+//Usando middleware de autenticação em todas as rotas.
+userRoutes.use(isAuthenticated);
 
 userRoutes.get('/', userController.show)
 
