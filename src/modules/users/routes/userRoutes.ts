@@ -2,15 +2,14 @@ import { Router } from "express";
 import { UserController } from "../controllers/UserController";
 import {celebrate, Joi, Segments} from 'celebrate';
 import isAuthenticated from "../../../middlewares/isAuthenticated";
+import { isatty } from "tty";
 const userRoutes = Router();
 const userController = new UserController();
 
-//Usando middleware de autenticação em todas as rotas.
-userRoutes.use(isAuthenticated);
 
-userRoutes.get('/', userController.show)
+userRoutes.get('/',isAuthenticated, userController.show)
 
-userRoutes.get('/:id', celebrate({
+userRoutes.get('/:id', isAuthenticated ,celebrate({
     [Segments.PARAMS]:{
         id: Joi.string().uuid().required()
     }
@@ -25,7 +24,7 @@ userRoutes.post('/', celebrate({
 }),
 userController.create)
 
-userRoutes.put('/:id', celebrate({
+userRoutes.put('/:id',isAuthenticated, celebrate({
     [Segments.PARAMS]:{
         id: Joi.string().uuid().required()
     },
@@ -37,7 +36,7 @@ userRoutes.put('/:id', celebrate({
     }
 }),userController.update)
 
-userRoutes.delete('/:id', celebrate({
+userRoutes.delete('/:id',isAuthenticated, celebrate({
     [Segments.PARAMS]:{
         id: Joi.string().uuid().required()
     }
