@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import Posts from "./Posts"
 
 @Entity('users')
 export class User {
@@ -10,6 +11,20 @@ export class User {
 
     @Column()
     password: string
+
+    @ManyToMany(()=> Posts, posts => posts.users)
+    @JoinTable({
+        name:'user_post',
+        joinColumn:{
+            name:'user_id',
+            referencedColumnName:'id'
+        },
+        inverseJoinColumn:{
+            name:'post_id',
+            referencedColumnName:'id'
+        }
+    })
+    posts: Posts[]
 
     @CreateDateColumn({type: 'timestamp with time zone'})
     createdAt: Date
