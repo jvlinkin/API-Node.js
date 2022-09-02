@@ -17,6 +17,8 @@ export default function isAuthenticated(req: Request,res:Response,next:NextFunct
             return res.json({message:'JWT is invalid.'})
         }
 
+        //Aqui, fazer validação de horário, para verificar se token ainda é válido.
+
         return next();
     } catch{
         return res.json({message:'JWT Error.'})
