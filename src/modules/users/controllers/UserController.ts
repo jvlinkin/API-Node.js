@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { userRepository } from "../repositories/UserRepository";
 import {compare, genSalt, hash} from 'bcrypt';
+import { CreateUserService } from "../services/CreateUserService";
+import {ShowUsersService} from '../services/ShowUsersService';
+
 
 
 
@@ -16,11 +19,17 @@ interface IUpdateRequest {
 
 export class UserController {
     public async show(req:Request, res: Response): Promise<Response>{
-        const user = await userRepository.find()
-        if(!user){            
-            res.status(404).json({message:'No users found.'})
+        const showUsersService = new ShowUsersService();
+
+        try {
+            const users = await showUsersService.execute();
+            return res.json(users);
+        } catch (error) {
+            console.log(error)
+            return res.json({message:'Internal server error.'})
+            
         }
-        return res.json(user);
+        
     }
 
     public async showUser(req:Request, res: Response): Promise<Response>{
@@ -39,33 +48,23 @@ export class UserController {
     }
     
     
-     public async create(req:Request,res:Response): Promise<Response | undefined>{
+     public async create(req:Request,res:Response): Promise<Response>{
         const {email,password} = req.body;
-        
-        const userExists = await userRepository.findOne({
-            where:{
-                email
-            }
-        })
-        if(userExists){
-            return res.json({message: 'user already exists.'})
+
+        const createUserService = new CreateUserService();
+
+        try{
+            const userService = await createUserService.execute({
+                email,password
+            })
+            return res.status(201).json({messsage:'User created!'})
+
+        }catch(err){
+            console.log(err);
+            return res.status(500).json({message:'Internal server error.'});
         }
 
-        const salt = await genSalt(15)
-        const hashedPassword = await hash(password, salt)
         
-        const user = userRepository.create({
-            email,
-            password:hashedPassword
-        })
-        
-
-        await userRepository.save(user).then(()=>{
-            return res.status(201).json(user)
-        }).catch((err)=>{
-            return res.status(500).json({message:'Internal server error.'})
-        })
-
         
         
      }
