@@ -3,6 +3,7 @@ import { userRepository } from "../repositories/UserRepository";
 import {compare, genSalt, hash} from 'bcrypt';
 import { CreateUserService } from "../services/CreateUserService";
 import {ShowUsersService} from '../services/ShowUsersService';
+import { UpdateUserService } from "../services/UpdateUserService";
 
 
 
@@ -73,7 +74,21 @@ export class UserController {
         const {id} = req.params;
         const {email, password, newEmail, newPassword}: IUpdateRequest = req.body;
 
-        const user = await userRepository.findOne({
+        const updateUserService = new UpdateUserService();
+
+        try {
+            const updatedUser = await updateUserService.execute({
+                id, email, password, newEmail, newPassword
+            })
+            return res.json({message:'User updated.',
+             updatedUser});
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message:'Internal server error.'});
+            
+        }
+
+        /*const user = await userRepository.findOne({
             where:{
                 id
             }
@@ -114,7 +129,7 @@ export class UserController {
         }).catch((err)=>{
             console.log(err)
             return res.json({message:'Internal server error.'})
-        })
+        })*/
 
         
      }
