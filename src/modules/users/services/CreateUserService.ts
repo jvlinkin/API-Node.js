@@ -18,7 +18,7 @@ export class CreateUserService {
 
         if(userExists){
             //Escrever um error handling.
-            throw Error('User already exists.')
+            throw new Error('User already exists.')
             
         }
 

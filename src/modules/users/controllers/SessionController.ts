@@ -3,6 +3,8 @@ import { userRepository } from "../repositories/UserRepository";
 import {compare} from 'bcrypt';
 import {Secret, sign} from 'jsonwebtoken';
 import authjwt from "../../../config/authjwt";
+import LoginUserService from "../services/LoginUserService";
+
 
 
 
@@ -11,30 +13,21 @@ export class SessionController {
     
     public async login(req:Request, res: Response): Promise<Response>{
         const {email, password} = req.body;
-        const secret = process.env.APP_SECRET as Secret;
 
-        const userExists = await userRepository.findOne({
-            where:{email}
-        })
+        const loginUserService = new LoginUserService();
 
-        if(!userExists){
-            return res.status(404).json({message:'User not found.'})
+        try {
+            const user = await loginUserService.execute({email,password});
+            
+            return res.json({message:'Logged!', user});
+        } catch (error) {
+            console.log(error)
+            
+            return res.json({message:'Internal server error.'})
+            
         }
-
-        const checkPassword = await compare(password, userExists.password)
-        if(checkPassword === false){
-            return res.json({message:'Password incorrect.'})
-        }
-
-        const token = sign({}, secret, {
-            subject:userExists.id,
-            expiresIn: authjwt.jwt.expiresIn
-        });
         
-        return res.json({
-            message:'Logged!',
-            token: token
-        })
+        
 
     }
     

@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import { postRepository } from "../repositories/PostResporitory";
+import ShowPostsService from "../services/ShowPostsService";
+import CreatePostService from "../services/CreatePostService";
+import { json } from "stream/consumers";
 
 
 
@@ -8,42 +11,50 @@ export class PostController {
     
     
     public async show(req: Request, res: Response): Promise<Response>{
-        const post = await postRepository.find();
+
+        //CALL SERVICE
+       const showPostsService = new ShowPostsService();
+
+       try {
+        const posts = await showPostsService.execute();
+
+        return res.json(posts);
+       } catch (error) {
+        console.log(error)
         
+        return res.json({message:'Internal server error.'})
+        
+       }
 
-        if(!post){
-            return res.json({message:'There is no posts.'})
-        }
-
-        return res.json(post);
+       
     }
 
 
     public async create(req:Request, res: Response): Promise<Response | undefined>{
-        console.log(req.body);
+        
         const {text_post, description} = req.body;
-        
-        
 
-        const post = postRepository.create({
-            text_post,
-            description
-        })
-        
-        if(!post){
-            return res.json({message:'There is no information enough to create the post.'})
-        }
+        const createPostService = new CreatePostService();
 
-        await postRepository.save(post).then(()=>{
-            return res.status(201).json({
-                message:'Post created successfully.',
+        try{
+            const post = await createPostService.execute({text_post, description})
+            return res.json({
+                message:'Post created!',
                 post
             })
-        }).catch((err)=>{
+
+        } catch(err){
             console.log(err)
             return res.json({message:'Internal server error.'})
-        })
+
+        }
+        
+
+    
         
     }
+
+    //Update POST,
+    //Delete POST;
     
 }
